@@ -1,4 +1,3 @@
-let http = require("http");
 let express = require("express");
 
 let env = {
@@ -12,13 +11,10 @@ let emails = require("./fixtures/emails");
 // express configuration
 // # ####################
 let app = express();
+
 app.use(onCreateServer);
 
-// # ####################
-// server configuration
-// # ####################
-let server = http.createServer(app);
-server.listen(env.PORT);
+app.listen(env.PORT);
 
 // # ####################
 // routes and logic
