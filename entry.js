@@ -21,10 +21,10 @@ app.listen(env.PORT);
 // # ####################
 let routes = {
   "GET /users": () => {
-    return JSON.stringify(users);
+    return users;
   },
   "GET /emails": () => {
-    return JSON.stringify(emails);
+    return emails;
   }
 };
 
@@ -33,11 +33,11 @@ function onCreateServer(req, res) {
 
   switch (true) {
     case typeof routes[route] === "function": {
-      res.end(routes[route]());
+      res.send(routes[route]());
       break;
     }
     default: {
-      res.end(`You asked for ${route}`);
+      res.send(`You asked for ${route}`);
     }
   }
 }
