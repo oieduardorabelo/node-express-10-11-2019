@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "nodemon entry.js"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
