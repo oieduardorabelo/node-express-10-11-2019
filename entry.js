@@ -14,7 +14,7 @@ let emails = require("./fixtures/emails");
 // # ########################################
 let app = express();
 
-app.use(onCreateServer);
+app.use(router);
 
 app.listen(env.PORT);
 
@@ -43,24 +43,24 @@ let routes = {
 
     let result = await createPayloadResponseType(payloads, payloadType);
     return result;
+  },
+  NOT_FOUND: (req, res) => {
+    let route = `${req.method} ${req.url}`;
+    return ["text/plain", `You asked for ${route}`];
   }
 };
 
-// # ########################################
-// utils and helpers
-// # ########################################
-let notFound = (req, res) => {
+async function router(req, res) {
   let route = `${req.method} ${req.url}`;
-  return ["text/plain", `You asked for ${route}`];
-};
-async function onCreateServer(req, res) {
-  let route = `${req.method} ${req.url}`;
-  let handler = routes[route] || notFound;
+  let handler = routes[route] || routes.NOT_FOUND;
   let [resType, resPayload] = await handler(req, res);
   res.type(resType);
   res.send(resPayload);
 }
 
+// # ########################################
+// utils and helpers
+// # ########################################
 function json2csv(json) {
   return new Promise((res, rej) => {
     csv.stringify(json, (err, output) => {
