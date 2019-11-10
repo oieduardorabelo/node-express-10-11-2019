@@ -12,7 +12,7 @@ let emails = require('./routes/emails');
 
 let app = express();
 
-app.use(compression({ threshold: 0 }));
+app.use(compression());
 app.use(middlewares.logger);
 
 app.use('/users', users.router);
