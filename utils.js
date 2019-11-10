@@ -1,3 +1,4 @@
+let crypto = require("crypto");
 let csv = require("csv");
 let json2xml = require("json2xml");
 
@@ -21,15 +22,15 @@ function json2csv(json) {
 
 async function createResponse(req, res, payload) {
   let formatters = {
+    json: () => {
+      res.send(payload);
+    },
     csv: async () => {
       let resultCsv = await json2csv(payload);
       res.send(resultCsv);
     },
     xml: () => {
       res.send(json2xml(payload));
-    },
-    json: () => {
-      res.send(payload);
     },
     default: () => {
       let format = req.get("Accept");
@@ -39,4 +40,23 @@ async function createResponse(req, res, payload) {
   res.format(formatters);
 }
 
-module.exports = { json2csv, json2xml, createResponse };
+function readBody(req) {
+  return new Promise((res, rej) => {
+    let chunks = [];
+    req.on("data", chunk => {
+      chunks.push(chunk);
+    });
+    req.on("end", () => {
+      res(Buffer.concat(chunks));
+    });
+    req.on("error", err => {
+      rej(err);
+    });
+  });
+}
+
+function generateId() {
+  return crypto.randomBytes(8).toString("hex");
+}
+
+module.exports = { json2csv, json2xml, createResponse, readBody, generateId };

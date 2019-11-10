@@ -8,7 +8,7 @@ let env = {
 // routes and logic
 // # ########################################
 let users = require("./routes/users");
-let emails = require("./routes/users");
+let emails = require("./routes/emails");
 
 // # ########################################
 // express configuration
