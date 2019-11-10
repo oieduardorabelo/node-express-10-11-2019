@@ -1,6 +1,10 @@
 let express = require('express');
 let bodyParser = require('body-parser');
 
+let jsonBodyParser = bodyParser.json({
+  limit: '100kb',
+});
+
 let middlewares = require('../middlewares');
 let {
   createResponse,
@@ -51,12 +55,12 @@ let router = express.Router();
 router
   .route('/')
   .get(getEmails)
-  .post(bodyParser.json(), postEmail);
+  .post(jsonBodyParser, postEmail);
 
 router
   .route('/:id')
   .get(getEmail)
-  .patch(bodyParser.json(), patchEmail)
+  .patch(jsonBodyParser, patchEmail)
   .delete(destroyEmail);
 
 module.exports = { router };
