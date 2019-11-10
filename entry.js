@@ -31,6 +31,21 @@ let getUsers = async (req, res) => {
   res.type(resType);
   res.send(resPayload);
 };
+let getUser = async (req, res) => {
+  let userId = req.params.id;
+  let userRecord = users.find(user => user.id === userId);
+
+  let payloadType = req.get("Accept");
+  let payloads = {
+    "text/csv": () => json2csv(userRecord),
+    "application/xml": () => json2xml(userRecord),
+    "application/json": () => userRecord
+  };
+
+  let [resType, resPayload] = await createResponse(payloads, payloadType);
+  res.type(resType);
+  res.send(resPayload);
+};
 let getEmails = async (req, res) => {
   let payloadType = req.get("Accept");
   let payloads = {
@@ -43,10 +58,27 @@ let getEmails = async (req, res) => {
   res.type(resType);
   res.send(resPayload);
 };
+let getEmail = async (req, res) => {
+  let emailId = req.params.id;
+  let emailRecord = emails.find(email => email.id === emailId);
+
+  let payloadType = req.get("Accept");
+  let payloads = {
+    "text/csv": () => json2csv(emailRecord),
+    "application/xml": () => json2xml(emailRecord),
+    "application/json": () => emailRecord
+  };
+
+  let [resType, resPayload] = await createResponse(payloads, payloadType);
+  res.type(resType);
+  res.send(resPayload);
+};
 
 let router = express.Router();
 router.get("/users", getUsers);
+router.get("/users/:id", getUser);
 router.get("/emails", getEmails);
+router.get("/emails/:id", getEmail);
 app.use(router);
 
 // # ########################################
