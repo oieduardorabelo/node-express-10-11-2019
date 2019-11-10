@@ -51,17 +51,14 @@ let routes = {
 // # ########################################
 async function onCreateServer(req, res) {
   let route = `${req.method} ${req.url}`;
+  let handler = routes[route];
 
-  switch (true) {
-    case typeof routes[route] === "function": {
-      let [resType, resPayload] = await routes[route](req);
-      res.type(resType);
-      res.send(resPayload);
-      break;
-    }
-    default: {
-      res.send(`You asked for ${route}`);
-    }
+  if (typeof handler === "function") {
+    let [resType, resPayload] = await routes[route](req);
+    res.type(resType);
+    res.send(resPayload);
+  } else {
+    res.send(`You asked for ${route}`);
   }
 }
 
