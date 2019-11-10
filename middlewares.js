@@ -1,14 +1,12 @@
+let morgan = require('morgan');
+
 let {
   readBody,
   ErrorPayloadNotFound,
   ErrorRecordNotFound,
 } = require('./utils');
 
-let logger = (req, res, next) => {
-  let route = `${req.method} ${req.url}`;
-  console.log(route);
-  next();
-};
+let logger = morgan('tiny');
 
 let jsonBodyParser = (req, res, next) => {
   readBody(req).then((body) => {
