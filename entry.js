@@ -49,17 +49,16 @@ let routes = {
 // # ########################################
 // utils and helpers
 // # ########################################
+let notFound = (req, res) => {
+  let route = `${req.method} ${req.url}`;
+  return ["text/plain", `You asked for ${route}`];
+};
 async function onCreateServer(req, res) {
   let route = `${req.method} ${req.url}`;
-  let handler = routes[route];
-
-  if (typeof handler === "function") {
-    let [resType, resPayload] = await routes[route](req);
-    res.type(resType);
-    res.send(resPayload);
-  } else {
-    res.send(`You asked for ${route}`);
-  }
+  let handler = routes[route] || notFound;
+  let [resType, resPayload] = await handler(req, res);
+  res.type(resType);
+  res.send(resPayload);
 }
 
 function json2csv(json) {
