@@ -10,16 +10,16 @@ let {
 
 let users = require('../fixtures/users');
 
-let getUsers = async (req, res) => {
-  createResponse(req, res, users);
+let getUsers = (req, res, next) => {
+  createResponse(req, res, next, users);
 };
-let getUser = async (req, res) => {
+let getUser = (req, res, next) => {
   let targetId = req.params.id;
   let record = users.find((item) => item.id === targetId);
   if (!record) {
     throw new ErrorRecordNotFound();
   }
-  createResponse(req, res, record);
+  createResponse(req, res, next, record);
 };
 
 let router = express.Router();

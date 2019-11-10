@@ -1,6 +1,6 @@
-let crypto = require("crypto");
-let csv = require("csv");
-let json2xml = require("json2xml");
+let crypto = require('crypto');
+let csv = require('csv');
+let json2xml = require('json2xml');
 
 function json2csv(json) {
   return new Promise((res, rej) => {
@@ -20,22 +20,31 @@ function json2csv(json) {
   });
 }
 
-async function createResponse(req, res, payload) {
+function createResponse(req, res, next, payload) {
   let formatters = {
     json: () => {
       res.send(payload);
+      next();
     },
-    csv: async () => {
-      let resultCsv = await json2csv(payload);
-      res.send(resultCsv);
+    csv: () => {
+      json2csv(payload)
+        .then((resultCsv) => {
+          res.send(resultCsv);
+          next();
+        })
+        .catch((err) => {
+          next(err);
+        });
     },
     xml: () => {
       res.send(json2xml(payload));
+      next();
     },
     default: () => {
-      let format = req.get("Accept");
+      let format = req.get('Accept');
       res.status(406).send(`Format type "${format}" is not acceptable.`);
-    }
+      next();
+    },
   };
   res.format(formatters);
 }
@@ -43,34 +52,34 @@ async function createResponse(req, res, payload) {
 function readBody(req) {
   return new Promise((res, rej) => {
     let chunks = [];
-    req.on("data", chunk => {
+    req.on('data', (chunk) => {
       chunks.push(chunk);
     });
-    req.on("end", () => {
+    req.on('end', () => {
       let result = Buffer.concat(chunks);
       res(result.toString());
     });
-    req.on("error", err => {
+    req.on('error', (err) => {
       rej(err);
     });
   });
 }
 
 function generateId() {
-  return crypto.randomBytes(8).toString("hex");
+  return crypto.randomBytes(8).toString('hex');
 }
 
 class ErrorRecordNotFound extends Error {
   constructor(message) {
     super(message);
-    this.name = "ERROR_100_RECORD_NOT_FOUND";
+    this.name = 'ERROR_100_RECORD_NOT_FOUND';
   }
 }
 
 class ErrorPayloadNotFound extends Error {
   constructor(message) {
     super(message);
-    this.name = "ERROR_110_PAYLOAD_NOT_FOUND";
+    this.name = 'ERROR_110_PAYLOAD_NOT_FOUND';
   }
 }
 
@@ -81,5 +90,5 @@ module.exports = {
   readBody,
   generateId,
   ErrorRecordNotFound,
-  ErrorPayloadNotFound
+  ErrorPayloadNotFound,
 };

@@ -12,27 +12,24 @@ let {
 
 let emails = require('../fixtures/emails');
 
-let getEmails = async (req, res) => {
-  createResponse(req, res, emails);
+let getEmails = (req, res, next) => {
+  createResponse(req, res, next, emails);
 };
-let getEmail = async (req, res) => {
+let getEmail = (req, res, next) => {
   let targetId = req.params.id;
   let record = emails.find((item) => item.id === targetId);
   if (!record) {
     throw new ErrorRecordNotFound();
   }
-  createResponse(req, res, record);
+  createResponse(req, res, next, record);
 };
-let postEmail = async (req, res) => {
+let postEmail = (req, res) => {
   let email = req.body;
-  if (!email) {
-    throw new ErrorPayloadNotFound();
-  }
   email.id = generateId();
   emails.push(email);
   res.status(201).send(email);
 };
-let patchEmail = async (req, res) => {
+let patchEmail = (req, res) => {
   let email = emails.find((item) => item.id === req.params.id);
   if (!email) {
     throw new ErrorRecordNotFound();
@@ -40,7 +37,7 @@ let patchEmail = async (req, res) => {
   Object.assign(email, req.body);
   res.status(200).send(email);
 };
-let destroyEmail = async (req, res) => {
+let destroyEmail = (req, res) => {
   let targetIndex = emails.findIndex((item) => item.id === req.params.id);
   if (targetIndex === -1) {
     throw new ErrorRecordNotFound();
