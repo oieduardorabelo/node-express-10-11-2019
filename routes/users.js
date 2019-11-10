@@ -5,31 +5,45 @@ let { createResponse, json2csv, json2xml } = require("../utils");
 let users = require("../fixtures/users");
 
 let getUsers = async (req, res) => {
-  let payloadType = req.get("Accept");
-  let payloads = {
-    "text/csv": () => json2csv(users),
-    "application/xml": () => json2xml(users),
-    "application/json": () => users
+  let formatters = {
+    csv: async () => {
+      let payload = await json2csv(users);
+      res.send(payload);
+    },
+    xml: () => {
+      res.send(json2xml(users));
+    },
+    json: () => {
+      res.send(users);
+    },
+    default: () => {
+      let format = req.get("Accept");
+      res.status(406).send(`Format type "${format}" is not acceptable.`);
+    }
   };
-
-  let [resType, resPayload] = await createResponse(payloads, payloadType);
-  res.type(resType);
-  res.send(resPayload);
+  res.format(formatters);
 };
 let getUser = async (req, res) => {
-  let userId = req.params.id;
-  let userRecord = users.find(user => user.id === userId);
+  let targetId = req.params.id;
+  let record = users.find(item => item.id === targetId);
 
-  let payloadType = req.get("Accept");
-  let payloads = {
-    "text/csv": () => json2csv([userRecord]),
-    "application/xml": () => json2xml(userRecord),
-    "application/json": () => userRecord
+  let formatters = {
+    csv: async () => {
+      let payload = await json2csv([record]);
+      res.send(payload);
+    },
+    xml: () => {
+      res.send(json2xml(record));
+    },
+    json: () => {
+      res.send(record);
+    },
+    default: () => {
+      let format = req.get("Accept");
+      res.status(406).send(`Format type "${format}" is not acceptable.`);
+    }
   };
-
-  let [resType, resPayload] = await createResponse(payloads, payloadType);
-  res.type(resType);
-  res.send(resPayload);
+  res.format(formatters);
 };
 
 let router = express.Router();
