@@ -74,12 +74,16 @@ let getEmail = async (req, res) => {
   res.send(resPayload);
 };
 
-let router = express.Router();
-router.get("/users", getUsers);
-router.get("/users/:id", getUser);
-router.get("/emails", getEmails);
-router.get("/emails/:id", getEmail);
-app.use(router);
+let usersRouter = express.Router();
+usersRouter.get("/users", getUsers);
+usersRouter.get("/users/:id", getUser);
+
+let emailsRouter = express.Router();
+emailsRouter.get("/emails", getEmails);
+emailsRouter.get("/emails/:id", getEmail);
+
+app.use(usersRouter);
+app.use(emailsRouter);
 
 // # ########################################
 // utils and helpers
