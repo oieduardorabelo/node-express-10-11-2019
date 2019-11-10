@@ -14,49 +14,40 @@ let emails = require("./fixtures/emails");
 // # ########################################
 let app = express();
 
-app.use(router);
-
 app.listen(env.PORT);
 
 // # ########################################
 // routes and logic
 // # ########################################
-let routes = {
-  "GET /users": async req => {
-    let payloadType = req.get("Accept");
-    let payloads = {
-      "text/csv": () => json2csv(users),
-      "application/xml": () => json2xml(users),
-      "application/json": () => users
-    };
+let getUsers = async (req, res) => {
+  let payloadType = req.get("Accept");
+  let payloads = {
+    "text/csv": () => json2csv(users),
+    "application/xml": () => json2xml(users),
+    "application/json": () => users
+  };
 
-    let result = await createPayloadResponseType(payloads, payloadType);
-    return result;
-  },
-  "GET /emails": async req => {
-    let payloadType = req.get("Accept");
-    let payloads = {
-      "text/csv": () => json2csv(emails),
-      "application/xml": () => json2xml(emails),
-      "application/json": () => emails
-    };
-
-    let result = await createPayloadResponseType(payloads, payloadType);
-    return result;
-  },
-  NOT_FOUND: (req, res) => {
-    let route = `${req.method} ${req.url}`;
-    return ["text/plain", `You asked for ${route}`];
-  }
-};
-
-async function router(req, res) {
-  let route = `${req.method} ${req.url}`;
-  let handler = routes[route] || routes.NOT_FOUND;
-  let [resType, resPayload] = await handler(req, res);
+  let [resType, resPayload] = await createResponse(payloads, payloadType);
   res.type(resType);
   res.send(resPayload);
-}
+};
+let getEmails = async (req, res) => {
+  let payloadType = req.get("Accept");
+  let payloads = {
+    "text/csv": () => json2csv(emails),
+    "application/xml": () => json2xml(emails),
+    "application/json": () => emails
+  };
+
+  let [resType, resPayload] = await createResponse(payloads, payloadType);
+  res.type(resType);
+  res.send(resPayload);
+};
+
+let router = express.Router();
+router.get("/users", getUsers);
+router.get("/emails", getEmails);
+app.use(router);
 
 // # ########################################
 // utils and helpers
@@ -72,7 +63,7 @@ function json2csv(json) {
   });
 }
 
-async function createPayloadResponseType(payloads, payloadType) {
+async function createResponse(payloads, payloadType) {
   if (payloads[payloadType]) {
     return [payloadType, await payloads[payloadType]()];
   }
