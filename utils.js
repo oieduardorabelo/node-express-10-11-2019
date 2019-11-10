@@ -47,7 +47,8 @@ function readBody(req) {
       chunks.push(chunk);
     });
     req.on("end", () => {
-      res(Buffer.concat(chunks));
+      let result = Buffer.concat(chunks);
+      res(result.toString());
     });
     req.on("error", err => {
       rej(err);
@@ -59,4 +60,26 @@ function generateId() {
   return crypto.randomBytes(8).toString("hex");
 }
 
-module.exports = { json2csv, json2xml, createResponse, readBody, generateId };
+class ErrorRecordNotFound extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ERROR_100_RECORD_NOT_FOUND";
+  }
+}
+
+class ErrorPayloadNotFound extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ERROR_110_PAYLOAD_NOT_FOUND";
+  }
+}
+
+module.exports = {
+  json2csv,
+  json2xml,
+  createResponse,
+  readBody,
+  generateId,
+  ErrorRecordNotFound,
+  ErrorPayloadNotFound
+};
