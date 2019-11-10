@@ -4,6 +4,9 @@ let env = {
   PORT: 3000
 };
 
+// # ########################################
+// routes and logic
+// # ########################################
 let users = require("./routes/users");
 let emails = require("./routes/users");
 
@@ -12,10 +15,7 @@ let emails = require("./routes/users");
 // # ########################################
 let app = express();
 
-app.listen(env.PORT);
-
-// # ########################################
-// routes and logic
-// # ########################################
 app.use("/users", users.router);
 app.use("/emails", emails.router);
+
+app.listen(env.PORT);
