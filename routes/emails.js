@@ -38,11 +38,15 @@ let destroyEmail = async (req, res) => {
 };
 
 let router = express.Router();
-router.get("/", getEmails);
-router.post("/", postEmail);
+router
+  .route("/")
+  .get(getEmails)
+  .post(postEmail);
 
-router.get("/:id", getEmail);
-router.patch("/:id", patchEmail);
-router.delete("/:id", destroyEmail);
+router
+  .route("/:id")
+  .get(getEmail)
+  .patch(patchEmail)
+  .delete(destroyEmail);
 
 module.exports = { router };
