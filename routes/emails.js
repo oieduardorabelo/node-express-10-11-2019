@@ -1,4 +1,5 @@
 let express = require('express');
+let bodyParser = require('body-parser');
 
 let middlewares = require('../middlewares');
 let {
@@ -50,12 +51,12 @@ let router = express.Router();
 router
   .route('/')
   .get(getEmails)
-  .post(middlewares.jsonBodyParser, postEmail);
+  .post(bodyParser.json(), postEmail);
 
 router
   .route('/:id')
   .get(getEmail)
-  .patch(middlewares.jsonBodyParser, patchEmail)
+  .patch(bodyParser.json(), patchEmail)
   .delete(destroyEmail);
 
 module.exports = { router };

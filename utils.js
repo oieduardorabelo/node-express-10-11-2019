@@ -49,22 +49,6 @@ function createResponse(req, res, next, payload) {
   res.format(formatters);
 }
 
-function readBody(req) {
-  return new Promise((res, rej) => {
-    let chunks = [];
-    req.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-    req.on('end', () => {
-      let result = Buffer.concat(chunks);
-      res(result.toString());
-    });
-    req.on('error', (err) => {
-      rej(err);
-    });
-  });
-}
-
 function generateId() {
   return crypto.randomBytes(8).toString('hex');
 }
@@ -87,7 +71,6 @@ module.exports = {
   json2csv,
   json2xml,
   createResponse,
-  readBody,
   generateId,
   ErrorRecordNotFound,
   ErrorPayloadNotFound,

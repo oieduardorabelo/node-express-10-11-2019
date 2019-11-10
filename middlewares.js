@@ -1,23 +1,8 @@
 let morgan = require('morgan');
 
-let {
-  readBody,
-  ErrorPayloadNotFound,
-  ErrorRecordNotFound,
-} = require('./utils');
+let { ErrorPayloadNotFound, ErrorRecordNotFound } = require('./utils');
 
 let logger = morgan('tiny');
-
-let jsonBodyParser = (req, res, next) => {
-  readBody(req).then((body) => {
-    if (!body) {
-      next(new ErrorPayloadNotFound());
-    } else {
-      req.body = JSON.parse(body);
-      next();
-    }
-  });
-};
 
 let errorHandler = (error, req, res, next) => {
   switch (true) {
@@ -39,4 +24,4 @@ let errorHandler = (error, req, res, next) => {
   }
 };
 
-module.exports = { logger, jsonBodyParser, errorHandler };
+module.exports = { logger, errorHandler };
